@@ -11,6 +11,7 @@ import datetime
 import json
 import os
 import pkg_resources
+import re
 import sys
 import time
 import bisect
@@ -151,11 +152,20 @@ class HTMLReport(object):
             hash_generator = hashlib.md5()
             hash_generator.update(hash_key.encode('utf-8'))
             hex_digest = hash_generator.hexdigest()
+
+            # Cleanup the filename to remove problematic chars
+            # Leading and trailing spaces are stripped, spaces ar changed to underscore, double colons to hyphen, then
+            # only alphanums, underscores, hyphens, dots and slashes are kept
+            # Then normalize filename to a system compliant string (Basically, on Windows, replace / by \)
+            asset_file_name = str(hash_key).strip().replace(' ', '_').replace('::', '-')
+            asset_file_name = re.sub(r'(?u)[^-\w./]', '', asset_file_name)
+            asset_file_name = os.path.normpath(asset_file_name)
+
             # 255 is the common max filename length on various filesystems,
             # we subtract hash length, file extension length and 2 more
             # characters for the underscore and dot
             max_length = 255 - len(hex_digest) - len(file_extension) - 2
-            asset_file_name = '{0}_{1}.{2}'.format(hash_key[:max_length],
+            asset_file_name = '{0}_{1}.{2}'.format(asset_file_name[:max_length],
                                                    hex_digest,
                                                    file_extension)
             asset_path = os.path.join(os.path.dirname(self.logfile),

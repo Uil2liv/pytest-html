@@ -409,8 +409,10 @@ class TestHTML:
         hash_generator = hashlib.md5()
         hash_generator.update(hash_key.encode('utf-8'))
         assert result.ret == 0
+        filename = str(hash_key).replace(' ', '_').replace('::', '-')
+        filename = re.sub(r'(?u)[^-\w./]', '', filename)
         src = '{0}/{1}'.format('assets', '{0}_{1}.txt'.
-                               format(hash_key, hash_generator.hexdigest()))
+                               format(filename, hash_generator.hexdigest()))
         link = ('<a class="text" href="{0}" target="_blank">'.format(src))
         assert link in html
         assert os.path.exists(src)
@@ -438,8 +440,10 @@ class TestHTML:
         hash_generator = hashlib.md5()
         hash_generator.update(hash_key.encode('utf-8'))
         assert result.ret == 0
+        filename = str(hash_key).replace(' ', '_').replace('::', '-')
+        filename = re.sub(r'(?u)[^-\w./]', '', filename)
         src = '{0}/{1}'.format('assets', '{0}_{1}.{2}'.
-                               format(hash_key, hash_generator.hexdigest(),
+                               format(filename, hash_generator.hexdigest(),
                                       file_extension))
         link = ('<a class="image" href="{0}" target="_blank">'.format(src))
         assert link in html
@@ -475,7 +479,9 @@ class TestHTML:
                         'test_fail0{0}'.format(i))
             hash_generator = hashlib.md5()
             hash_generator.update(hash_key.encode('utf-8'))
-            src = 'assets/{0}_{1}.{2}'.format(hash_key,
+            filename = str(hash_key).replace(' ', '_').replace('::', '-')
+            filename = re.sub(r'(?u)[^-\w./]', '', filename)
+            src = 'assets/{0}_{1}.{2}'.format(filename,
                                               hash_generator.hexdigest(),
                                               file_extension)
             link = ('<a class="image" href="{0}" target="_blank">'.format(src))
@@ -525,7 +531,9 @@ class TestHTML:
         hash_key = 'test_very_long_test_name.py::{}00'.format(test_name)
         hash_generator = hashlib.md5()
         hash_generator.update(hash_key.encode('utf-8'))
-        src = 'assets/{0}_{1}.png'.format(hash_key[:218],
+        filename = str(hash_key).replace(' ', '_').replace('::', '-')
+        filename = re.sub(r'(?u)[^-\w./]', '', filename)
+        src = 'assets/{0}_{1}.png'.format(filename[:218],
                                           hash_generator.hexdigest())
         link = ('<a class="image" href="{0}" target="_blank">'.format(src))
         assert result.ret
